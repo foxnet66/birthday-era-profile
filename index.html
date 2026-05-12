@@ -681,6 +681,7 @@
       </div>
       <nav class="nav" aria-label="页面操作">
         <button class="ghost-button" id="sampleButton" type="button">示例</button>
+        <button class="ghost-button" id="languageButton" type="button">EN</button>
         <button class="primary-button" id="exportButton" type="button" disabled>导出 HTML</button>
       </nav>
     </header>
@@ -776,8 +777,86 @@
     const birthMetaEl = document.querySelector("#birthMeta");
     const exportButton = document.querySelector("#exportButton");
     const sampleButton = document.querySelector("#sampleButton");
+    const languageButton = document.querySelector("#languageButton");
     const clearButton = document.querySelector("#clearButton");
     let currentReport = null;
+    let currentInput = null;
+    let currentLang = "zh";
+
+    const uiCopy = {
+      zh: {
+        lang: "zh-CN",
+        title: "生日时代画像",
+        brand: "生日时代画像",
+        brandSub: "用出生日期解码时代背景、心理脚本与人生策略",
+        navLabel: "页面操作",
+        sample: "示例",
+        switchLabel: "EN",
+        export: "导出 HTML",
+        eyebrow: "非命理 · 非占星 · 代际心理与时代语境分析",
+        hero: "把一个生日，翻译成一份时代画像。",
+        lead: "输入出生日期后，系统会生成 7 个维度的精美报告：童年背景、性格进化、职业指南、关系模式、财务心态、隐藏困境和人生路线图。结果可一键导出为独立 HTML 文件。",
+        meta1Title: "7",
+        meta1Text: "个分析模块，覆盖身份、关系、事业和财富。",
+        meta2Title: "本地",
+        meta2Text: "浏览器内生成，不上传个人生日数据。",
+        meta3Title: "HTML",
+        meta3Text: "导出后可离线打开、分享或归档。",
+        inputTitle: "输入出生日期",
+        inputHelp: "格式为年、月、日。系统会基于出生年份所在的时代、成长阶段和社会文化变迁生成分析。",
+        year: "年",
+        month: "月",
+        day: "日",
+        generate: "生成分析",
+        clear: "清空",
+        note: "说明：结果由代际底盘、出生季节、月内位置、年度位置、日期行为原型和生命主题数共同生成；这是启发式画像，不是诊断、预测或命理结论。",
+        pending: "待生成",
+        pendingMeta: "输入日期后显示时代坐标",
+        emptyTitle: "报告会出现在这里",
+        emptyText: "先输入一个出生日期，生成完整的 7 段式时代画像。",
+        invalidDate: (nowYear) => `请输入 1900-${nowYear} 之间有效的出生日期。`,
+        exported: (filename, url) => `已生成 ${escapeHtml(filename)}。如果没有自动下载，<a href="${url}" download="${escapeHtml(filename)}" target="_blank" rel="noopener">点击这里保存或打开</a>。`,
+        filePrefix: "生日时代画像",
+        exportTitle: (date) => `${date} 生日时代画像`,
+        exportSub: (date, profile) => `${date} · ${profile} · 本报告为代际心理与时代语境分析`
+      },
+      en: {
+        lang: "en",
+        title: "Birthday Era Profile",
+        brand: "Birthday Era Profile",
+        brandSub: "Decode era context, mindset patterns, and life strategy from a birth date",
+        navLabel: "Page actions",
+        sample: "Sample",
+        switchLabel: "中文",
+        export: "Export HTML",
+        eyebrow: "No fortune-telling · No astrology · Generational psychology and era context",
+        hero: "Turn a birthday into an era profile.",
+        lead: "Enter a birth date to generate a refined 7-part report: childhood context, personality evolution, career compass, relationship patterns, financial mindset, hidden challenges, and a life roadmap. Export the result as a standalone HTML file.",
+        meta1Title: "7",
+        meta1Text: "analysis modules covering identity, relationships, career, and wealth.",
+        meta2Title: "Local",
+        meta2Text: "Generated in your browser. Birth data is not uploaded.",
+        meta3Title: "HTML",
+        meta3Text: "Export for offline viewing, sharing, or archiving.",
+        inputTitle: "Enter Birth Date",
+        inputHelp: "Use year, month, day. The report is generated from the era, growth stage, and social-cultural shifts around the birth year.",
+        year: "Year",
+        month: "Month",
+        day: "Day",
+        generate: "Generate Report",
+        clear: "Clear",
+        note: "Note: results combine generational context, season, month position, year position, date archetype, and life theme number. This is an interpretive profile, not diagnosis, prediction, or fortune-telling.",
+        pending: "Pending",
+        pendingMeta: "Enter a date to show the era coordinates",
+        emptyTitle: "Your report will appear here",
+        emptyText: "Enter a birth date to generate the full 7-part era profile.",
+        invalidDate: (nowYear) => `Please enter a valid birth date between 1900 and ${nowYear}.`,
+        exported: (filename, url) => `Generated ${escapeHtml(filename)}. If it did not download automatically, <a href="${url}" download="${escapeHtml(filename)}" target="_blank" rel="noopener">click here to save or open it</a>.`,
+        filePrefix: "Birthday-Era-Profile",
+        exportTitle: (date) => `${date} Birthday Era Profile`,
+        exportSub: (date, profile) => `${date} · ${profile} · Generational psychology and era context report`
+      }
+    };
 
     const eraProfiles = [
       {
@@ -854,7 +933,7 @@
       const date = new Date(year, month - 1, day);
       const nowYear = new Date().getFullYear();
       if (!day || !month || !year || year < 1900 || year > nowYear || date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
-        throw new Error(`请输入 1900-${nowYear} 之间有效的出生日期。`);
+        throw new Error(uiCopy[currentLang].invalidDate(nowYear));
       }
       return { day, month, year, date };
     }
@@ -1089,7 +1168,7 @@
       return { season, dayType, monthPhase, yearPosition, lifeTheme };
     }
 
-    function buildReport(input) {
+    function buildReportZh(input) {
       const profile = getProfile(input.year);
       const personal = getPersonalProfile(input);
       const age = new Date().getFullYear() - input.year;
@@ -1224,11 +1303,282 @@
       };
     }
 
+    const sectionTitlesEn = [
+      "Childhood Context Decoder",
+      "Personality Evolution Map",
+      "Career Compass",
+      "Relationship Pattern Analysis",
+      "Financial Mindset Matrix",
+      "Hidden Challenge Detector",
+      "Life Roadmap"
+    ];
+
+    const eraProfilesEn = [
+      {
+        min: 1946,
+        max: 1964,
+        name: "Postwar Rebuilding Generation",
+        context: "formed during a long cycle of postwar order, industrial expansion, and renewed family stability",
+        childhood: ["material security and family discipline were often placed first", "school, workplace, and community structures shaped identity strongly", "older generations carried high authority, and personal wishes often had to fit collective arrangements"],
+        values: ["responsibility", "stability", "seniority", "long-termism"],
+        work: ["public service", "education and training", "manufacturing management", "healthcare", "traditional finance"],
+        money: "This cohort often trusts savings, property, and lower-volatility assets, preferring family security before risk-taking.",
+        blind: "A common blind spot is mistaking endurance for maturity, while underestimating the need to express needs and update skills."
+      },
+      {
+        min: 1965,
+        max: 1980,
+        name: "Transitional Bridge Generation",
+        context: "witnessed the shift from analog life to digital systems, understanding offline order while adapting early to market competition",
+        childhood: ["resources were limited, but the promise of social mobility expanded", "family expectations for achievement rose sharply", "television, pop culture, and consumer culture began reshaping tastes and aspirations"],
+        values: ["independence", "pragmatism", "resilience", "opportunity sensitivity"],
+        work: ["business management", "sales and channels", "entrepreneurship", "consulting", "supply chain and trade"],
+        money: "This group often values asset building and cash-flow safety, while accepting calculable risks for clear returns.",
+        blind: "A common blind spot is carrying too much alone, undercounting emotional cost, and tying self-worth too tightly to performance."
+      },
+      {
+        min: 1981,
+        max: 1996,
+        name: "Millennial Turning-Point Generation",
+        context: "kept some offline community texture in childhood, then had adolescence reshaped by the internet, globalization, and education pressure",
+        childhood: ["parental expectations, exam systems, and urbanization opportunities all applied pressure", "life moved rapidly from paper, TV, and landlines into computers and mobile internet", "personal choices expanded, while comparison pressure expanded with them"],
+        values: ["growth", "efficiency", "identity exploration", "security with freedom"],
+        work: ["product management", "internet operations", "brand strategy", "data analysis", "new consumer business", "cross-border business"],
+        money: "This cohort often wants financial freedom while staying alert to uncertainty, moving between disciplined saving and opportunity-based investing.",
+        blind: "A common blind spot is being pulled by metrics, peer comparison, and life timelines, rather than building a personal rhythm."
+      },
+      {
+        min: 1997,
+        max: 2012,
+        name: "Digital-Native Generation",
+        context: "entered mobile internet, platform economies, and dense information environments early in life",
+        childhood: ["screens, social media, and recommendation algorithms entered life early", "education paths became more competitive, while interests became more publicly visible", "diverse identities, instant feedback, and global culture became familiar earlier"],
+        values: ["authenticity", "boundaries", "experience", "skill compounding"],
+        work: ["content creation", "AI applications", "user research", "games and interactive entertainment", "design technology", "remote collaboration roles"],
+        money: "This group encounters investing, installment consumption, and side-income narratives early; the advantage is information sensitivity, while the risk is short-term return stories.",
+        blind: "A common blind spot is overload from information, choice fatigue, and always-on life, making deep work and offline recovery essential."
+      },
+      {
+        min: 2013,
+        max: 2026,
+        name: "AI Childhood Generation",
+        context: "began childhood with AI tools, hybrid learning, and a more uncertain education environment",
+        childhood: ["families pay more attention to individuality and mental health", "learning is reshaped by video, interactive software, and intelligent assistants", "real-world social play, movement, and attention training become crucial protective factors"],
+        values: ["creation", "adaptation", "collaboration", "media literacy"],
+        work: ["future paths are still early, but will naturally lean toward human-AI collaboration, creative expression, scientific exploration, and interdisciplinary projects"],
+        money: "Financial attitudes are still forming, shaped by family modeling, digital payment habits, and the ability to judge virtual assets.",
+        blind: "A key risk is mistaking instant answers for real understanding, while needing patience and embodied experience beyond convenient technology."
+      }
+    ];
+
+    const fallbackProfileEn = {
+      name: "Cross-Era Sample",
+      context: "the birth year falls outside the main sample bands, so the report uses a broad generational psychology frame",
+      childhood: ["family, education, and social structure remain core sources of early identity", "childhood is shaped by economic security and the media environment of the time", "individual variation is much stronger than any cohort label"],
+      values: ["adaptation", "relationship", "security", "growth"],
+      work: ["education", "public service", "professional services", "creative work", "technology-assisted roles"],
+      money: "Financial patterns usually emerge from family scripts, economic cycles, and early risk experiences.",
+      blind: "Use generational interpretation as a clue, not a verdict about personal destiny."
+    };
+
+    const seasonProfilesEn = {
+      spring: {
+        name: "Spring-born Rhythm",
+        months: [3, 4, 5],
+        childhood: "The growth script more often centers on adapting to new settings, active exploration, and relationship warm-up.",
+        personality: "External change can activate action quickly, making small experiments a useful way to test life choices.",
+        career: "You may draw energy from exploration, planning, user insight, education, and early-stage projects.",
+        relationship: "Communication often starts with goodwill, but warmth and boundaries need to be stated together.",
+        money: "New opportunities can be attractive, so a dedicated experiment budget helps keep exploration money separate from safety money.",
+        blind: "It is easy to overestimate the power of starting and underestimate the cost of maintenance.",
+        route: "At every stage, pair new beginnings with review, closure, and long-term maintenance."
+      },
+      summer: {
+        name: "Summer-born Rhythm",
+        months: [6, 7, 8],
+        childhood: "The growth script more often centers on expression, competition, visibility, and recognition.",
+        personality: "A visible drive is often stronger, and expectations, rankings, or public moments can become motivating forces.",
+        career: "You may fit brand expression, growth work, content, leadership coordination, and high-feedback businesses.",
+        relationship: "Communication is often direct and warm; the challenge is not letting emotion arrive before the actual need.",
+        money: "Quality of life and immediate reward matter, so reward spending and long-term asset accounts should be separated.",
+        blind: "It is easy to confuse being seen with being understood, and to skip recovery after intense output.",
+        route: "The goal is not to keep heating up forever, but to build a rhythm between peak output and recovery."
+      },
+      autumn: {
+        name: "Autumn-born Rhythm",
+        months: [9, 10, 11],
+        childhood: "The growth script more often centers on order, evaluation, school timing, and comparison standards.",
+        personality: "Judgment and filtering tend to stand out; action often begins after standards are defined.",
+        career: "You may fit strategy, product planning, research, finance, legal work, operations systems, and aesthetic judgment.",
+        relationship: "You may first observe consistency; the strength is reliability, while the challenge is not letting critique replace needs.",
+        money: "Risk boundaries and structured accumulation matter, but too much caution can cause missed learning opportunities.",
+        blind: "It is easy to use perfect planning as a source of safety, consuming the action window through repeated evaluation.",
+        route: "Practice acting at 70% clarity, then improving through feedback."
+      },
+      winter: {
+        name: "Winter-born Rhythm",
+        months: [12, 1, 2],
+        childhood: "The growth script more often centers on observation, inner safety, slow-burn relationships, and independent processing.",
+        personality: "The inner world can be deep; under pressure, you may first narrow information before deciding whether to speak.",
+        career: "You may fit deep research, technical building, counseling, long projects, knowledge products, and systems design.",
+        relationship: "You may be slow to warm up but serious about commitment; give emotional signals earlier so others do not have to guess.",
+        money: "A strong safety cushion feels natural; the challenge is not compressing every choice into the most conservative option.",
+        blind: "Self-protection can become over-closure, and asking for help can feel like bothering others.",
+        route: "Turn solitude into deep work, while leaving real entry points for relationships."
+      }
+    };
+
+    const dayArchetypesEn = [
+      { name: "Initiator", test: (day) => [1, 10, 19, 28].includes(day), trait: "are more easily driven by making a first version", relation: "state goals and expectations directly", finance: "write opportunity criteria down to prevent impulsive starts", blind: "underestimating rhythm differences in collaboration" },
+      { name: "Coordinator", test: (day) => [2, 11, 20, 29].includes(day), trait: "are better at sensing relational atmosphere and team tension", relation: "avoid delaying truth for the sake of harmony", finance: "clarify shared-money boundaries and reduce people-pleasing spending", blind: "placing others' feelings ahead of your own priorities" },
+      { name: "Expressor", test: (day) => [3, 12, 21, 30].includes(day), trait: "build presence through language, taste, or creativity", relation: "translate emotion into specific requests rather than only releasing feelings", finance: "separate creative investment from emotional spending", blind: "having many ideas but turning too few into finished work" },
+      { name: "Builder", test: (day) => [4, 13, 22, 31].includes(day), trait: "prefer stable structures, processes, and verifiable outcomes", relation: "explain the care behind your rules", finance: "fit long-term saving, insurance, indexed allocation, and steady assets", blind: "overvaluing control and compressing room for exploration" },
+      { name: "Explorer", test: (day) => [5, 14, 23].includes(day), trait: "are pulled by change, movement, new skills, and cross-domain opportunities", relation: "define freedom and commitment early", finance: "set a risk allocation so novelty does not control money decisions", blind: "mistaking discomfort for a sign to change direction" },
+      { name: "Caretaker", test: (day) => [6, 15, 24].includes(day), trait: "often take on care, integration, and relationship maintenance", relation: "place caring for others and expressing yourself side by side", finance: "watch overpaying for family, relationships, or appearances", blind: "turning responsibility into automatic over-carrying" },
+      { name: "Researcher", test: (day) => [7, 16, 25].includes(day), trait: "value underlying logic and independent judgment", relation: "explain that quietness is processing, not coldness", finance: "fit research-driven investing, but avoid information overload that delays action", blind: "using analysis as a substitute for experience" },
+      { name: "Driver", test: (day) => [8, 17, 26].includes(day), trait: "focus on results, resources, efficiency, and real-world influence", relation: "let close people see vulnerability, not only solutions", finance: "connect asset goals with career growth, while avoiding excess leverage", blind: "mistaking over-functioning for control" },
+      { name: "Integrator", test: (day) => [9, 18, 27].includes(day), trait: "see issues through the big picture, meaning, and long-term impact", relation: "keep both generosity and bottom lines", finance: "fit value-driven long-term allocation, while avoiding idealized judgment", blind: "carrying too much explanation for complex relationships" }
+    ];
+
+    function getProfileEn(year) {
+      return eraProfilesEn.find((profile) => year >= profile.min && year <= profile.max) || fallbackProfileEn;
+    }
+
+    function getSeasonProfileEn(month) {
+      return Object.values(seasonProfilesEn).find((season) => season.months.includes(month));
+    }
+
+    function getDayArchetypeEn(day) {
+      return dayArchetypesEn.find((item) => item.test(day));
+    }
+
+    function getMonthPhaseEn(day) {
+      if (day <= 10) return { name: "Early-Month Starter", behavior: "You are more likely to see problems as starting points and tasks, acting first and calibrating later.", challenge: "Leave more room for observation at the start so speed does not outrun judgment." };
+      if (day <= 20) return { name: "Mid-Month Integrator", behavior: "You are more likely to coordinate among several expectations and merge scattered information into a plan.", challenge: "Avoid sacrificing your own priorities while trying to balance everyone." };
+      return { name: "Late-Month Finisher", behavior: "You are more likely to focus on outcomes, completion, and stage reviews, making you suited to iteration and delivery.", challenge: "Allow imperfection during the process instead of closing every step too early." };
+    }
+
+    function getYearPositionEn(input) {
+      const start = new Date(input.year, 0, 1);
+      const end = new Date(input.year, 11, 31);
+      const dayOfYear = Math.floor((input.date - start) / 86400000) + 1;
+      const progress = dayOfYear / (Math.floor((end - start) / 86400000) + 1);
+      if (progress < 0.34) return { name: "Early-Year Birth", school: "Within the same school cohort, you may reach age milestones earlier and be expected to act mature sooner.", timing: "Your life rhythm works well when you build the base first, then expand choices." };
+      if (progress < 0.67) return { name: "Mid-Year Birth", school: "Age differences inside the cohort may feel less pronounced, making self-calibration through peers easier.", timing: "Your life rhythm works well when you seek personal breakthroughs inside stable structures." };
+      return { name: "Late-Year Birth", school: "You may experience a mild sense of catching up in the cohort, while developing observation and adaptive timing.", timing: "Your life rhythm works well when slow warming becomes a review-and-compound advantage." };
+    }
+
+    function getLifeThemeEn(number) {
+      const themes = {
+        1: ["Autonomy", "building personal agency", "move from waiting for permission to defining the problem"],
+        2: ["Collaboration", "handling relationship tension", "keep your own boundary alongside empathy"],
+        3: ["Expression", "turning ideas into visible work", "move from inspiration to consistent output"],
+        4: ["Order", "building long-term systems", "move from controlling details to strengthening structural resilience"],
+        5: ["Change", "cross-domain adaptation", "turn novelty into transferable skills"],
+        6: ["Responsibility", "care and integration", "move from over-carrying to mature negotiation"],
+        7: ["Insight", "deep learning", "move from observation to verifiable action"],
+        8: ["Influence", "resources and outcomes", "move from proving capability to building sustainable influence"],
+        9: ["Meaning", "integrating experience", "move from processing for others to choosing clearly"],
+        11: ["Sensitive Insight", "high-signal perception", "turn intuition into clear methods"],
+        22: ["Large-Scale Building", "long-term projects", "turn vision into stable execution systems"]
+      };
+      const [name, focus, lesson] = themes[number] || themes[9];
+      return { number, name, focus, lesson };
+    }
+
+    function getPersonalProfileEn(input) {
+      return {
+        season: getSeasonProfileEn(input.month),
+        dayType: getDayArchetypeEn(input.day),
+        monthPhase: getMonthPhaseEn(input.day),
+        yearPosition: getYearPositionEn(input),
+        lifeTheme: getLifeThemeEn(getLifeNumber(input))
+      };
+    }
+
+    function zodiacLabelEn(year) {
+      const animals = ["Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat"];
+      return animals[year % 12];
+    }
+
+    function buildReportEn(input) {
+      const profile = getProfileEn(input.year);
+      const personal = getPersonalProfileEn(input);
+      const age = new Date().getFullYear() - input.year;
+      const decade = `${Math.floor(input.year / 10) * 10}s`;
+      const formatted = `${input.year}-${String(input.month).padStart(2, "0")}-${String(input.day).padStart(2, "0")}`;
+      const comparisonBefore = input.year <= 1980 ? "younger cohorts often have more digital tools, but weaker early boundaries" : "older cohorts usually rely more on offline order, seniority paths, and stable organizations";
+      const comparisonAfter = input.year >= 1997 ? "older cohorts often know lower-noise childhoods and longer organizational commitments better" : "later cohorts are more used to platform collaboration, instant feedback, and multi-identity switching";
+
+      return {
+        formatted,
+        age,
+        profile,
+        personal,
+        sections: [
+          {
+            title: sectionTitlesEn[0],
+            tag: personal.season.name,
+            summary: `Someone born on ${formatted} sits in the era coordinates of the “${profile.name}”: ${profile.context}. The individual layer adds ${personal.season.name}, ${personal.monthPhase.name}, and ${personal.yearPosition.name}, so people born in the same year can still show different growth rhythms.`,
+            insights: [["Generational Influence", profile.childhood[0]], ["Personal Rhythm", personal.season.childhood], ["Cohort Position", personal.yearPosition.school]],
+            timeline: [[`0-${Math.min(6, age)}`, `Basic worldview forms through family interaction, care, and safety. ${personal.season.name} emphasizes: ${personal.season.childhood}`], [`7-${Math.min(15, age)}`, `School evaluation and peer comparison become stronger. ${personal.yearPosition.school}`], [`16-${Math.min(24, age)}`, `Era change enters real choices: education, career, city, tools, and identity. ${personal.monthPhase.behavior}`]]
+          },
+          {
+            title: sectionTitlesEn[1],
+            tag: `${personal.dayType.name} · Theme ${personal.lifeTheme.number}`,
+            summary: `The core tension of this birth point is responding to the era's success template while building a more personal life pattern. Compared with adjacent cohorts, ${comparisonBefore}; meanwhile, ${comparisonAfter}. Individually, the profile is closer to “${personal.dayType.name} × ${personal.lifeTheme.name}.”`,
+            insights: [["Stable Base", `Common strengths include ${profile.values.slice(0, 2).join(" and ")}; decisions tend to seek explainable paths and compounding returns.`], ["Individual Tendency", `The ${personal.dayType.name} pattern means you ${personal.dayType.trait}; the ${personal.lifeTheme.name} theme pulls attention toward ${personal.lifeTheme.focus}.`], ["Evolution Direction", `Over time, personality shifts from proving yourself toward choosing systems worth sustained investment. The key lesson is to ${personal.lifeTheme.lesson}.`]],
+            matrix: [["Stronger Than Previous Cohort", "Higher acceptance of new opportunities, identity expression, and cross-domain movement."], ["Stronger Than Later Cohort", "A firmer feel for long-term investment, offline relationships, and real-world constraints."], ["Likely Sticking Point", `${personal.monthPhase.challenge} Under generational comparison pressure, life can become a chain of deliverables.`], ["Growth Key", `Replace peer comparison with your own systems: body, relationships, skills, assets, and body of work; use ${personal.lifeTheme.name} as a long-term calibration point.`]]
+          },
+          {
+            title: sectionTitlesEn[2],
+            tag: personal.season.name,
+            summary: `Based on the economic, cultural, and technological landscape around ${input.year}, the right career direction is not one fixed role. It is a field that uses era sensitivity, learning ability, and collaboration style. ${personal.season.career}`,
+            insights: profile.work.slice(0, 3).map((job, index) => [job, ["Good for turning complex information into executable plans; long-term value comes from judgment and trust.", "Good for finding user, market, or organizational needs in change; long-term value comes from review speed.", "Good for turning taste, technology, or communication into productized outcomes; long-term value comes from a portfolio of work."][index]]),
+            matrix: [["Natural Edge", `You can translate between old rules and new tools; the ${personal.dayType.name} pattern means you ${personal.dayType.trait}.`], ["Work Preference", `You need autonomy and clear feedback. ${personal.monthPhase.behavior}`], ["Long-Term Fulfillment", `Fulfillment comes from transferable skills, stable cash flow, recognized expertise, and fields that serve ${personal.lifeTheme.focus}.`], ["Watchout", `Do not chase hot industries alone; check whether the role compounds judgment, expression, or execution. ${personal.season.blind}`]]
+          },
+          {
+            title: sectionTitlesEn[3],
+            tag: personal.dayType.name,
+            summary: `Relationship patterns are not determined by birthdays, but birth era can shape how someone understands intimacy, boundaries, responsibility, and conflict. The ${profile.name} often balances stable connection with personal space.`,
+            insights: [["Communication Style", `${personal.season.relationship} Also, ${personal.dayType.relation}.`], ["Attachment Tendency", "A common pattern is wanting firm commitment while fearing loss of control through over-dependence. Security comes from consistent action more than verbal promises."], ["Conflict Response", `${personal.monthPhase.challenge} The real growth point is expressing boundaries earlier, before emotional depletion.`]],
+            matrix: [["Strength", "You value responsibility, follow-through, and shared growth, and can invest in long-term relationship maintenance."], ["Blind Spot", `${personal.dayType.blind}; also, saying “I'm fine” can deprive others of calibration signals.`], ["Repair Strategy", "Use concrete facts: what happened, how you interpreted it, what you need, and what to try next."], ["Growth Opportunity", "Move intimacy from a performance field into a practice field: allow vulnerability, negotiation, and stage-by-stage adjustment."]]
+          },
+          {
+            title: sectionTitlesEn[4],
+            tag: `Theme ${personal.lifeTheme.number}`,
+            summary: `${profile.money} Personal modifier: ${personal.season.money}`,
+            insights: [["Money Script", "Early economic atmosphere shapes the meaning of safety, dignity, and choice. Money is not just a number; it represents control over life rhythm."], ["Risk Preference", `${personal.dayType.finance}. Also split risk into learning risk, asset risk, and survival risk.`], ["Wealth Building", `Long-term accumulation relies on cash-flow management, skill compounding, allocation discipline, and awareness of consumption impulses; the ${personal.lifeTheme.name} theme asks money to serve ${personal.lifeTheme.focus}.`]],
+            matrix: [["Common Strength", "You can delay gratification for long-term goals and learn tools that increase income efficiency."], ["Common Blind Spot", "Anxiety can lead to excessive safety hoarding, while opportunity stories can trigger chasing."], ["Saving Strategy", "Keep 6-12 months of basic cash flow, then layer long-term capital by time horizon."], ["Decision Rule", "Before any investment or major purchase, ask: does this improve cash flow, capability, health, or only relieve short-term anxiety?"]]
+          },
+          {
+            title: sectionTitlesEn[5],
+            tag: personal.monthPhase.name,
+            summary: `${profile.blind} With personal traits layered in, watch especially for ${personal.dayType.blind} and ${personal.season.blind}`,
+            insights: [["Daily Signal", `You may look capable from the outside while staying tense internally. ${personal.monthPhase.behavior}`], ["Deeper Mechanism", "This often comes from early emphasis on performance, maturity, competition, or safety. It is not a character flaw."], ["Conversion Method", `Turn blind spots into strengths: build feedback loops, regular reviews, active support-seeking, and real recovery time. Your key practice is to ${personal.lifeTheme.lesson}.`]],
+            matrix: [["Blind Spot 1", "Mistaking busyness for progress. Strategy: keep only three weekly actions that truly move core life systems."], ["Blind Spot 2", "Mistaking comparison for direction. Strategy: use a personal dashboard for health, cash flow, work, and relationship quality."], ["Blind Spot 3", "Mistaking independence for not needing support. Strategy: build different support circles for different problems."], ["Blind Spot 4", "Mistaking information intake for capability growth. Strategy: every learning stream should produce one small verifiable output."]]
+          },
+          {
+            title: sectionTitlesEn[6],
+            tag: personal.yearPosition.name,
+            summary: `This roadmap starts from ${formatted}, combining the ${profile.name}, ${personal.season.name}, ${personal.dayType.name}, and life theme “${personal.lifeTheme.name}” to outline likely opportunities, challenges, and decision priorities by stage.`,
+            timeline: [["0-12", "Key lessons are safety, learning habits, and embodied experience. Prioritize stable care, real interests, and basic confidence."], ["13-22", `Key lessons are identity testing and capability validation. ${personal.yearPosition.school}`], ["23-35", `Key lessons are career positioning, intimacy, and city choice. Build transferable skills and healthy boundaries while responding to ${personal.lifeTheme.focus}.`], ["36-50", `Key lessons are resource integration and role redesign. ${personal.season.route}`], ["51+", "Key lessons are legacy, freedom, and meaning. Prioritize health, relationships, body of work, and sustainable rhythm."]],
+            matrix: [["Current Age", `Around ${age}, the priority is not chasing every possibility, but identifying two or three systems worth compounding.`], ["Year Coordinate", `Born in the ${decade}; Chinese zodiac: ${zodiacLabelEn(input.year)}. This is shown only as a cultural label, not as a basis for judgment.`], ["Personal Coordinate", `${personal.season.name} · ${personal.monthPhase.name} · ${personal.yearPosition.name} · Life Theme ${personal.lifeTheme.number}: ${personal.lifeTheme.name}.`], ["Decision Focus", `At each stage, ask whether energy is recovering, capability is growing, and relationships are becoming more truthful; keep calibrating toward this lesson: ${personal.lifeTheme.lesson}.`]]
+          }
+        ]
+      };
+    }
+
+    function buildReport(input) {
+      return currentLang === "en" ? buildReportEn(input) : buildReportZh(input);
+    }
+
     function renderReport(report) {
       currentReport = report;
       exportButton.disabled = false;
       birthYearEl.textContent = `${report.profile.name}`;
-      birthMetaEl.textContent = `${report.formatted} · ${report.personal.season.name} · ${report.personal.dayType.name} · 主题 ${report.personal.lifeTheme.number}`;
+      const themeLabel = currentLang === "en" ? "Theme" : "主题";
+      birthMetaEl.textContent = `${report.formatted} · ${report.personal.season.name} · ${report.personal.dayType.name} · ${themeLabel} ${report.personal.lifeTheme.number}`;
       tocEl.innerHTML = report.sections.map((section, index) => `
         <a href="#section-${index + 1}"><span class="dot"></span>${index + 1}. ${section.title}</a>
       `).join("");
@@ -1237,22 +1587,36 @@
 
     function renderPersonalOverview(report) {
       const personal = report.personal;
-      const items = [
-        ["代际底盘", report.profile.name, report.profile.context],
-        ["出生季节", personal.season.name, personal.season.personality],
-        ["日期原型", personal.dayType.name, personal.dayType.trait],
-        ["月内位置", personal.monthPhase.name, personal.monthPhase.behavior],
-        ["年度位置", personal.yearPosition.name, personal.yearPosition.timing],
-        ["生命主题", `${personal.lifeTheme.number} · ${personal.lifeTheme.name}`, personal.lifeTheme.lesson]
-      ];
+      const items = currentLang === "en"
+        ? [
+          ["Generational Base", report.profile.name, report.profile.context],
+          ["Birth Season", personal.season.name, personal.season.personality],
+          ["Date Archetype", personal.dayType.name, personal.dayType.trait],
+          ["Month Position", personal.monthPhase.name, personal.monthPhase.behavior],
+          ["Year Position", personal.yearPosition.name, personal.yearPosition.timing],
+          ["Life Theme", `${personal.lifeTheme.number} · ${personal.lifeTheme.name}`, personal.lifeTheme.lesson]
+        ]
+        : [
+          ["代际底盘", report.profile.name, report.profile.context],
+          ["出生季节", personal.season.name, personal.season.personality],
+          ["日期原型", personal.dayType.name, personal.dayType.trait],
+          ["月内位置", personal.monthPhase.name, personal.monthPhase.behavior],
+          ["年度位置", personal.yearPosition.name, personal.yearPosition.timing],
+          ["生命主题", `${personal.lifeTheme.number} · ${personal.lifeTheme.name}`, personal.lifeTheme.lesson]
+        ];
+      const heading = currentLang === "en" ? `${report.formatted} Personalized Profile Summary` : `${report.formatted} 的专属画像摘要`;
+      const explainer = currentLang === "en"
+        ? "These 6 variables make nearby birthdays produce different reports. Year defines era context; month and day shape personal rhythm, behavioral tendency, and decision reminders."
+        : "下面 6 个变量会让相近生日产生不同报告。年份负责时代背景，月日负责个人节奏、行为倾向和决策提醒。";
+      const tag = currentLang === "en" ? "Personalized" : "个性化差异";
       return `
         <article class="personal-overview" id="personal-overview">
           <div class="overview-head">
             <div>
-              <h3>${escapeHtml(report.formatted)} 的专属画像摘要</h3>
-              <p>下面 6 个变量会让相近生日产生不同报告。年份负责时代背景，月日负责个人节奏、行为倾向和决策提醒。</p>
+              <h3>${escapeHtml(heading)}</h3>
+              <p>${escapeHtml(explainer)}</p>
             </div>
-            <span class="tag">个性化差异</span>
+            <span class="tag">${escapeHtml(tag)}</span>
           </div>
           <div class="overview-grid">
             ${items.map(([label, title, text]) => `
@@ -1315,9 +1679,60 @@
         .replaceAll("'", "&#039;");
     }
 
+    function emptyReportMarkup() {
+      const copy = uiCopy[currentLang];
+      return `<div class="empty-state"><div><h3>${escapeHtml(copy.emptyTitle)}</h3><p>${escapeHtml(copy.emptyText)}</p></div></div>`;
+    }
+
+    function applyLanguage() {
+      const copy = uiCopy[currentLang];
+      document.documentElement.lang = copy.lang;
+      document.title = copy.title;
+      document.querySelector(".brand").setAttribute("aria-label", copy.brand);
+      document.querySelector(".brand h1").textContent = copy.brand;
+      document.querySelector(".brand p").textContent = copy.brandSub;
+      document.querySelector(".nav").setAttribute("aria-label", copy.navLabel);
+      sampleButton.textContent = copy.sample;
+      languageButton.textContent = copy.switchLabel;
+      exportButton.textContent = copy.export;
+      document.querySelector(".eyebrow").textContent = copy.eyebrow;
+      document.querySelector("#hero-title").textContent = copy.hero;
+      document.querySelector(".lead").textContent = copy.lead;
+      const metaTiles = document.querySelectorAll(".meta-tile");
+      metaTiles[0].querySelector("strong").textContent = copy.meta1Title;
+      metaTiles[0].querySelector("span").textContent = copy.meta1Text;
+      metaTiles[1].querySelector("strong").textContent = copy.meta2Title;
+      metaTiles[1].querySelector("span").textContent = copy.meta2Text;
+      metaTiles[2].querySelector("strong").textContent = copy.meta3Title;
+      metaTiles[2].querySelector("span").textContent = copy.meta3Text;
+      document.querySelector("#input-title").textContent = copy.inputTitle;
+      document.querySelector(".panel-title p").textContent = copy.inputHelp;
+      const labels = document.querySelectorAll(".date-grid label");
+      labels[0].childNodes[0].textContent = copy.year + "\n              ";
+      labels[1].childNodes[0].textContent = copy.month + "\n              ";
+      labels[2].childNodes[0].textContent = copy.day + "\n              ";
+      yearInput.setAttribute("aria-label", currentLang === "en" ? "Birth date year" : "出生日期 年");
+      monthInput.setAttribute("aria-label", currentLang === "en" ? "Birth date month" : "出生日期 月");
+      dayInput.setAttribute("aria-label", currentLang === "en" ? "Birth date day" : "出生日期 日");
+      form.querySelector(".primary-button").textContent = copy.generate;
+      clearButton.title = copy.clear;
+      clearButton.setAttribute("aria-label", copy.clear);
+      document.querySelector(".note").textContent = copy.note;
+      if (currentInput) {
+        renderReport(buildReport(currentInput));
+      } else {
+        birthYearEl.textContent = copy.pending;
+        birthMetaEl.textContent = copy.pendingMeta;
+        tocEl.innerHTML = "";
+        reportEl.innerHTML = emptyReportMarkup();
+      }
+      statusEl.textContent = "";
+    }
+
     function generate() {
       try {
         const input = parseDate();
+        currentInput = input;
         statusEl.textContent = "";
         renderReport(buildReport(input));
       } catch (error) {
@@ -1335,6 +1750,7 @@
 
     function exportHtml() {
       if (!currentReport) return;
+      const copy = uiCopy[currentLang];
       const reportMarkup = reportEl.innerHTML;
       const css = Array.from(document.styleSheets)
         .map((sheet) => {
@@ -1347,11 +1763,11 @@
         .join("\n")
         .replace(".export-template { display: none; }", "");
       const html = `<!doctype html>
-<html lang="zh-CN">
+<html lang="${copy.lang}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(currentReport.formatted)} 生日时代画像</title>
+  <title>${escapeHtml(copy.exportTitle(currentReport.formatted))}</title>
   <style>${css}</style>
 </head>
 <body>
@@ -1368,8 +1784,8 @@
           </svg>
         </div>
         <div>
-          <h1>生日时代画像</h1>
-          <p>${escapeHtml(currentReport.formatted)} · ${escapeHtml(currentReport.profile.name)} · 本报告为代际心理与时代语境分析</p>
+          <h1>${escapeHtml(copy.brand)}</h1>
+          <p>${escapeHtml(copy.exportSub(currentReport.formatted, currentReport.profile.name))}</p>
         </div>
       </div>
     </header>
@@ -1381,7 +1797,7 @@
 </html>`;
       const blob = new Blob([html], { type: "text/html;charset=utf-8" });
       const url = URL.createObjectURL(blob);
-      const filename = `生日时代画像-${currentReport.formatted.replaceAll("/", "-")}.html`;
+      const filename = `${copy.filePrefix}-${currentReport.formatted.replaceAll("/", "-").replaceAll(":", "-")}.html`;
       const link = document.createElement("a");
       link.href = url;
       link.download = filename;
@@ -1390,7 +1806,7 @@
       document.body.appendChild(link);
       link.click();
       const preview = window.open(url, "_blank", "noopener");
-      statusEl.innerHTML = `已生成 ${escapeHtml(filename)}。如果没有自动下载，<a href="${url}" download="${escapeHtml(filename)}" target="_blank" rel="noopener">点击这里保存或打开</a>。`;
+      statusEl.innerHTML = copy.exported(filename, url);
       setTimeout(() => {
         link.remove();
         if (preview && preview.closed) {
@@ -1405,19 +1821,27 @@
     });
 
     sampleButton.addEventListener("click", () => fillDate("18/11/1995"));
+    languageButton.addEventListener("click", () => {
+      currentLang = currentLang === "zh" ? "en" : "zh";
+      applyLanguage();
+    });
     exportButton.addEventListener("click", exportHtml);
     clearButton.addEventListener("click", () => {
+      const copy = uiCopy[currentLang];
       dayInput.value = "";
       monthInput.value = "";
       yearInput.value = "";
       statusEl.textContent = "";
       currentReport = null;
+      currentInput = null;
       exportButton.disabled = true;
-      birthYearEl.textContent = "待生成";
-      birthMetaEl.textContent = "输入日期后显示时代坐标";
+      birthYearEl.textContent = copy.pending;
+      birthMetaEl.textContent = copy.pendingMeta;
       tocEl.innerHTML = "";
-      reportEl.innerHTML = '<div class="empty-state"><div><h3>报告会出现在这里</h3><p>先输入一个出生日期，生成完整的 7 段式时代画像。</p></div></div>';
+      reportEl.innerHTML = emptyReportMarkup();
     });
+
+    applyLanguage();
   </script>
 </body>
 </html>
