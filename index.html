@@ -1,0 +1,1423 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>生日时代画像</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202022;
+      --muted: #6e6a63;
+      --paper: #f7f1e7;
+      --surface: #fffaf2;
+      --line: #dfd4c3;
+      --charcoal: #2f3330;
+      --jade: #1f7a68;
+      --vermillion: #c24a34;
+      --gold: #b9862a;
+      --blue: #356b8c;
+      --shadow: 0 20px 60px rgba(49, 43, 34, .14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(32, 32, 34, .04) 1px, transparent 1px) 0 0 / 42px 42px,
+        linear-gradient(0deg, rgba(32, 32, 34, .035) 1px, transparent 1px) 0 0 / 42px 42px,
+        radial-gradient(circle at 15% 5%, rgba(194, 74, 52, .16), transparent 28rem),
+        radial-gradient(circle at 90% 8%, rgba(31, 122, 104, .14), transparent 30rem),
+        var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .seal {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: #fffaf2;
+      border: 1px solid rgba(47, 51, 48, .2);
+      color: var(--jade);
+      box-shadow: 0 10px 24px rgba(49, 43, 34, .13);
+      flex: 0 0 auto;
+    }
+
+    .seal svg {
+      width: 27px;
+      height: 27px;
+      stroke-width: 1.9;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .icon-button,
+    .primary-button,
+    .ghost-button {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 242, .74);
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 0 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+      white-space: nowrap;
+    }
+
+    .icon-button {
+      width: 42px;
+      padding: 0;
+    }
+
+    .primary-button {
+      background: var(--charcoal);
+      border-color: var(--charcoal);
+      color: #fffaf2;
+    }
+
+    .ghost-button:hover,
+    .icon-button:hover,
+    .primary-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(32, 32, 34, .42);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 26px;
+    }
+
+    .hero-copy {
+      min-height: 420px;
+      padding: clamp(30px, 6vw, 72px) 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .eyebrow {
+      color: var(--vermillion);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0;
+      margin: 0 0 14px;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      max-width: 780px;
+      font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .hero-copy .lead {
+      margin: 20px 0 0;
+      max-width: 670px;
+      color: #4f4a44;
+      font-size: clamp(15px, 1.45vw, 18px);
+      line-height: 1.78;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 30px;
+      max-width: 670px;
+    }
+
+    .meta-tile {
+      border-top: 2px solid var(--ink);
+      padding-top: 10px;
+      min-height: 74px;
+    }
+
+    .meta-tile strong {
+      display: block;
+      font-size: 22px;
+      font-family: "Songti SC", "STSong", serif;
+      line-height: 1.12;
+    }
+
+    .meta-tile span {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .input-panel {
+      background: rgba(255, 250, 242, .86);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      align-self: center;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel-title h3 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.25;
+      font-family: "Songti SC", "STSong", serif;
+    }
+
+    .panel-title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 13.5px;
+    }
+
+    .date-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fffdf8;
+      color: var(--ink);
+      padding: 0 12px;
+      outline: none;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px rgba(31, 122, 104, .14);
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .note {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.68;
+    }
+
+    .status {
+      margin-top: 12px;
+      min-height: 22px;
+      color: var(--vermillion);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .status a {
+      color: var(--jade);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .side-panel {
+      position: sticky;
+      top: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 242, .82);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .birth-card {
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .birth-card .big {
+      display: block;
+      font-family: "Songti SC", "STSong", serif;
+      font-size: 27px;
+      line-height: 1.12;
+    }
+
+    .birth-card .small {
+      color: var(--muted);
+      line-height: 1.58;
+      font-size: 13px;
+    }
+
+    .toc {
+      display: grid;
+      gap: 6px;
+    }
+
+    .toc a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 0 10px;
+      border-radius: 6px;
+      color: #4f4a44;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .toc a:hover {
+      background: rgba(31, 122, 104, .08);
+      color: var(--ink);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--jade);
+      border-radius: 50%;
+      flex: 0 0 auto;
+    }
+
+    .report {
+      display: grid;
+      gap: 18px;
+    }
+
+    .empty-state {
+      min-height: 360px;
+      border: 1px dashed rgba(47, 51, 48, .34);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 250, 242, .54);
+    }
+
+    .section-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 250, 242, .9);
+      overflow: hidden;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(31, 122, 104, .09), transparent);
+    }
+
+    .number {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: #fffaf2;
+      border-radius: 6px;
+      font-weight: 900;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: clamp(20px, 2vw, 26px);
+      line-height: 1.22;
+      font-family: "Songti SC", "STSong", serif;
+    }
+
+    .tag {
+      border: 1px solid rgba(194, 74, 52, .32);
+      color: var(--vermillion);
+      background: rgba(194, 74, 52, .08);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .personal-overview {
+      border: 1px solid rgba(194, 74, 52, .28);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(194, 74, 52, .1), transparent 34%),
+        linear-gradient(90deg, rgba(31, 122, 104, .1), transparent),
+        rgba(255, 250, 242, .94);
+      padding: 18px;
+    }
+
+    .overview-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .overview-head h3 {
+      margin: 0;
+      font-family: "Songti SC", "STSong", serif;
+      font-size: clamp(21px, 2.4vw, 30px);
+      line-height: 1.22;
+    }
+
+    .overview-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 13.5px;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .overview-item {
+      min-height: 116px;
+      border: 1px solid rgba(223, 212, 195, .92);
+      border-radius: 6px;
+      background: #fffdf8;
+      padding: 13px;
+    }
+
+    .overview-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+
+    .overview-item strong {
+      display: block;
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.3;
+      margin-bottom: 7px;
+    }
+
+    .overview-item p {
+      margin: 0;
+      color: #57514a;
+      line-height: 1.6;
+      font-size: 12.8px;
+    }
+
+    .section-body {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .summary {
+      font-size: 15.5px;
+      line-height: 1.82;
+      color: #393632;
+      margin: 0;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .insight {
+      border-left: 3px solid var(--jade);
+      background: rgba(247, 241, 231, .75);
+      padding: 12px 13px;
+      min-height: 120px;
+    }
+
+    .insight strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .insight p {
+      margin: 0;
+      color: #57514a;
+      line-height: 1.68;
+      font-size: 13.5px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 14px;
+      padding: 13px 0;
+      border-top: 1px solid rgba(223, 212, 195, .82);
+    }
+
+    .timeline-row:first-child {
+      border-top: 0;
+    }
+
+    .timeline-row strong {
+      color: var(--gold);
+    }
+
+    .timeline-row p {
+      margin: 0;
+      color: #57514a;
+      line-height: 1.68;
+      font-size: 13.5px;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .matrix-item {
+      border: 1px solid rgba(223, 212, 195, .9);
+      background: #fffdf8;
+      border-radius: 6px;
+      padding: 14px;
+    }
+
+    .matrix-item b {
+      display: block;
+      color: var(--blue);
+      margin-bottom: 7px;
+    }
+
+    .matrix-item span {
+      color: #57514a;
+      line-height: 1.68;
+      font-size: 13.5px;
+    }
+
+    .export-template {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .hero,
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy {
+        min-height: auto;
+        padding: 24px 0 8px;
+      }
+
+      .side-panel {
+        position: static;
+      }
+
+      .toc {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 18px;
+      }
+
+      .date-grid,
+      .action-row,
+      .hero-meta,
+      .insight-grid,
+      .overview-grid,
+      .matrix {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        grid-template-columns: auto 1fr;
+      }
+
+      .section-head .tag {
+        grid-column: 1 / -1;
+        width: fit-content;
+      }
+
+      .timeline-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .toc {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand" aria-label="生日时代画像">
+        <div class="seal" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.127 22H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5.125"></path>
+            <path d="M14.62 18.8A2.25 2.25 0 1 1 18 15.836a2.25 2.25 0 1 1 3.38 2.966l-2.626 2.856a.998.998 0 0 1-1.507 0z"></path>
+            <path d="M16 2v4"></path>
+            <path d="M3 10h18"></path>
+            <path d="M8 2v4"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>生日时代画像</h1>
+          <p>用出生日期解码时代背景、心理脚本与人生策略</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="页面操作">
+        <button class="ghost-button" id="sampleButton" type="button">示例</button>
+        <button class="primary-button" id="exportButton" type="button" disabled>导出 HTML</button>
+      </nav>
+    </header>
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">非命理 · 非占星 · 代际心理与时代语境分析</p>
+        <h2 id="hero-title">把一个生日，翻译成一份时代画像。</h2>
+        <p class="lead">输入出生日期后，系统会生成 7 个维度的精美报告：童年背景、性格进化、职业指南、关系模式、财务心态、隐藏困境和人生路线图。结果可一键导出为独立 HTML 文件。</p>
+        <div class="hero-meta" aria-label="报告特性">
+          <div class="meta-tile">
+            <strong>7</strong>
+            <span>个分析模块，覆盖身份、关系、事业和财富。</span>
+          </div>
+          <div class="meta-tile">
+            <strong>本地</strong>
+            <span>浏览器内生成，不上传个人生日数据。</span>
+          </div>
+          <div class="meta-tile">
+            <strong>HTML</strong>
+            <span>导出后可离线打开、分享或归档。</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="input-panel" aria-labelledby="input-title">
+        <div class="panel-title">
+          <div>
+            <h3 id="input-title">输入出生日期</h3>
+            <p>格式为年、月、日。系统会基于出生年份所在的时代、成长阶段和社会文化变迁生成分析。</p>
+          </div>
+        </div>
+        <form id="birthForm">
+          <div class="date-grid">
+            <label>年
+              <input id="yearInput" inputmode="numeric" autocomplete="bday-year" placeholder="YYYY" maxlength="4" aria-label="出生日期 年">
+            </label>
+            <label>月
+              <input id="monthInput" inputmode="numeric" autocomplete="bday-month" placeholder="MM" maxlength="2" aria-label="出生日期 月">
+            </label>
+            <label>日
+              <input id="dayInput" inputmode="numeric" autocomplete="bday-day" placeholder="DD" maxlength="2" aria-label="出生日期 日">
+            </label>
+          </div>
+          <div class="action-row">
+            <button class="primary-button" type="submit">生成分析</button>
+            <button class="icon-button" type="button" id="clearButton" title="清空" aria-label="清空">×</button>
+          </div>
+          <p class="note">说明：结果由代际底盘、出生季节、月内位置、年度位置、日期行为原型和生命主题数共同生成；这是启发式画像，不是诊断、预测或命理结论。</p>
+          <div class="status" id="status" role="status" aria-live="polite"></div>
+        </form>
+      </aside>
+    </section>
+
+    <section class="dashboard" aria-label="分析报告">
+      <aside class="side-panel">
+        <div class="birth-card">
+          <span class="big" id="birthYear">待生成</span>
+          <span class="small" id="birthMeta">输入日期后显示时代坐标</span>
+        </div>
+        <div class="toc" id="toc"></div>
+      </aside>
+      <div class="report" id="report">
+        <div class="empty-state">
+          <div>
+            <h3>报告会出现在这里</h3>
+            <p>先输入一个出生日期，生成完整的 7 段式时代画像。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const sectionTitles = [
+      "童年背景解码器",
+      "性格进化地图",
+      "职业指南针",
+      "关系模式分析",
+      "财务心态矩阵",
+      "隐藏困境探测器",
+      "人生路线图"
+    ];
+
+    const form = document.querySelector("#birthForm");
+    const dayInput = document.querySelector("#dayInput");
+    const monthInput = document.querySelector("#monthInput");
+    const yearInput = document.querySelector("#yearInput");
+    const statusEl = document.querySelector("#status");
+    const reportEl = document.querySelector("#report");
+    const tocEl = document.querySelector("#toc");
+    const birthYearEl = document.querySelector("#birthYear");
+    const birthMetaEl = document.querySelector("#birthMeta");
+    const exportButton = document.querySelector("#exportButton");
+    const sampleButton = document.querySelector("#sampleButton");
+    const clearButton = document.querySelector("#clearButton");
+    let currentReport = null;
+
+    const eraProfiles = [
+      {
+        min: 1946,
+        max: 1964,
+        name: "战后重建一代",
+        context: "成长于战后秩序、工业扩张和家庭结构重新稳定的长周期里",
+        childhood: ["物质安全感与家庭纪律常被放在首位", "学校、单位和社区是身份塑造的核心场域", "长辈经验拥有很高权威，个人愿望通常要让位于集体安排"],
+        values: ["责任", "稳定", "资历", "长期主义"],
+        work: ["公共服务", "教育培训", "制造管理", "医疗照护", "传统金融"],
+        money: "对储蓄、房产和低波动资产更有信任感，倾向先确保家庭安全再谈冒险。",
+        blind: "容易把忍耐误认为成熟，也可能低估表达需求和更新技能的重要性。"
+      },
+      {
+        min: 1965,
+        max: 1980,
+        name: "转型夹层一代",
+        context: "见证模拟时代向数字时代过渡，既理解线下秩序，也较早适应市场竞争",
+        childhood: ["童年资源有限但社会流动想象增强", "家庭对子女成就的期待显著上升", "电视、流行音乐和消费文化开始改变审美与欲望"],
+        values: ["独立", "实干", "抗压", "机会敏感"],
+        work: ["企业管理", "销售与渠道", "创业经营", "咨询服务", "供应链与贸易"],
+        money: "通常重视资产积累和现金流安全，愿意为了明确回报承担可计算风险。",
+        blind: "容易长期扛事、低估情绪成本，也可能把工作表现和自我价值绑定过紧。"
+      },
+      {
+        min: 1981,
+        max: 1996,
+        name: "千禧转折一代",
+        context: "童年仍保留线下社区感，青春期被互联网、全球化和教育竞争深刻改写",
+        childhood: ["家长期待、考试体系和城市化机会同时加压", "从纸质、电视、电话迅速跨入电脑和移动互联网", "个人选择变多，但比较压力也同步增强"],
+        values: ["成长", "效率", "身份探索", "安全与自由并重"],
+        work: ["产品经理", "互联网运营", "品牌策略", "数据分析", "新消费", "跨境业务"],
+        money: "一边渴望财务自由，一边对不确定性保持警惕；常在稳健储蓄和机会型投资之间摇摆。",
+        blind: "容易被绩效、同龄比较和人生进度表牵引，需要练习把目标拆成自己的节奏。"
+      },
+      {
+        min: 1997,
+        max: 2012,
+        name: "原生数字一代",
+        context: "出生后不久就进入移动互联网、平台经济和高密度信息环境",
+        childhood: ["屏幕、社交媒体和算法推荐较早进入生活", "教育路径更卷，兴趣表达也更公开", "对多元身份、即时反馈和全球文化更熟悉"],
+        values: ["真实", "边界", "体验", "技能复利"],
+        work: ["内容创作", "AI 应用", "用户研究", "游戏与互动娱乐", "设计科技", "远程协作岗位"],
+        money: "更早接触投资、消费分期和副业叙事；优势是信息敏感，风险是被短期回报故事牵动。",
+        blind: "容易被信息过载、选择疲劳和持续在线消耗，需要建立深度工作和离线恢复机制。"
+      },
+      {
+        min: 2013,
+        max: 2026,
+        name: "AI 童年一代",
+        context: "成长初期就面对 AI 工具、混合学习和更强的不确定性教育环境",
+        childhood: ["家庭更关注个性发展与心理健康", "学习方式被视频、互动软件和智能助手重塑", "现实社交、运动和专注力训练会成为关键保护因素"],
+        values: ["创造", "适应", "协作", "媒介素养"],
+        work: ["未来尚早，但会天然靠近人机协作、创意表达、科学探索和跨学科项目"],
+        money: "财务观仍在形成，关键影响来自家庭示范、数字支付习惯和对虚拟资产的辨别能力。",
+        blind: "需要防止把即时答案当成真实理解，也需要在便利技术之外建立耐心和身体经验。"
+      }
+    ];
+
+    const fallbackProfile = {
+      name: "跨时代样本",
+      context: "出生年份处在本工具主要样本区间之外，以下以宏观代际心理框架生成",
+      childhood: ["家庭、教育和社会结构仍是早期身份的核心来源", "童年经验会被当时的经济安全感和媒介环境塑形", "个体差异会显著高于代际标签本身"],
+      values: ["适应", "关系", "安全", "成长"],
+      work: ["教育", "公共服务", "专业服务", "创意行业", "技术辅助型岗位"],
+      money: "财务模式通常来自家庭脚本、经济周期和早期风险经验的叠加。",
+      blind: "需要把代际解释当作线索，而不是对个人命运的定论。"
+    };
+
+    function parseDate() {
+      const day = Number(dayInput.value.trim());
+      const month = Number(monthInput.value.trim());
+      const year = Number(yearInput.value.trim());
+      const date = new Date(year, month - 1, day);
+      const nowYear = new Date().getFullYear();
+      if (!day || !month || !year || year < 1900 || year > nowYear || date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+        throw new Error(`请输入 1900-${nowYear} 之间有效的出生日期。`);
+      }
+      return { day, month, year, date };
+    }
+
+    function getProfile(year) {
+      return eraProfiles.find((profile) => year >= profile.min && year <= profile.max) || fallbackProfile;
+    }
+
+    function zodiacLabel(year) {
+      const animals = ["猴", "鸡", "狗", "猪", "鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊"];
+      return animals[year % 12];
+    }
+
+    const seasonProfiles = {
+      spring: {
+        name: "春生型节奏",
+        months: [3, 4, 5],
+        childhood: "成长脚本更容易围绕新环境适应、主动探索和关系破冰展开。",
+        personality: "外部变化会较快激活行动力，适合用小实验推进人生选择。",
+        career: "更适合从开拓、策划、用户洞察、教育启发和早期项目中获得动能。",
+        relationship: "沟通上倾向先释放善意，但需要练习把热情和边界同时说清。",
+        money: "财务上容易被新机会吸引，适合设置试错预算，避免把探索资金和安全资金混用。",
+        blind: "容易高估开始的力量，低估持续维护的成本。",
+        route: "每个阶段都要把“开始”后面的复盘、收尾和长期维护补上。"
+      },
+      summer: {
+        name: "夏生型节奏",
+        months: [6, 7, 8],
+        childhood: "成长脚本更容易围绕表达、竞争、可见度和被认可的经验展开。",
+        personality: "有较强的外显驱动力，容易在关键场合被期待、排名和舞台感推着走。",
+        career: "更适合品牌表达、销售增长、内容传播、领导协调和高反馈业务。",
+        relationship: "沟通上直接度较高，优势是真诚有温度，挑战是避免情绪先于需求表达。",
+        money: "财务上重视生活质感和即时回报，需要把消费奖励和长期资产账户分开。",
+        blind: "容易把被看见等同于被理解，也容易在高强度输出后忽略恢复。",
+        route: "人生关键不是一直升温，而是学会在高峰和休整之间建立稳定节律。"
+      },
+      autumn: {
+        name: "秋生型节奏",
+        months: [9, 10, 11],
+        childhood: "成长脚本更容易围绕秩序、评估、入学节奏和比较标准展开。",
+        personality: "判断力和筛选能力通常更突出，做事倾向先建立标准再投入。",
+        career: "更适合策略分析、产品规划、研究、财务法务、运营体系和审美判断型工作。",
+        relationship: "沟通上会先观察一致性，优势是稳定可靠，挑战是别让挑剔替代表达需求。",
+        money: "财务上重视风险边界和结构化积累，适合长期配置，但要避免因过度谨慎错过学习型机会。",
+        blind: "容易把完备计划当作安全感来源，导致行动窗口被反复评估消耗。",
+        route: "每个阶段都要练习在 70% 清晰时行动，再用反馈修正。"
+      },
+      winter: {
+        name: "冬生型节奏",
+        months: [12, 1, 2],
+        childhood: "成长脚本更容易围绕观察、内在安全、慢热关系和独立消化展开。",
+        personality: "内在世界较深，面对压力时倾向先收束信息，再决定是否表达。",
+        career: "更适合深度研究、技术构建、心理咨询、长期项目、知识产品和系统设计。",
+        relationship: "沟通上慢热但重承诺，成长点是更早给出情绪信号，不让对方只能猜测。",
+        money: "财务上天然重视安全垫，适合稳健复利，但要防止把所有选择都压缩成保守选项。",
+        blind: "容易把自我保护发展成过度封闭，也可能把求助看成打扰别人。",
+        route: "人生路线要把独处能力转化为深度作品，同时给关系留出可进入的入口。"
+      }
+    };
+
+    const dayArchetypes = [
+      {
+        name: "开创者",
+        test: (day) => [1, 10, 19, 28].includes(day),
+        trait: "更容易被“先做出一个版本”驱动",
+        relation: "表达需求时适合直接说目标和期待",
+        finance: "适合把机会判断写成清单，防止冲动开局",
+        blind: "容易低估协作中的节奏差"
+      },
+      {
+        name: "协调者",
+        test: (day) => [2, 11, 20, 29].includes(day),
+        trait: "更擅长感知关系气氛和团队张力",
+        relation: "需要避免为了和谐而延后真实表达",
+        finance: "适合共同财务边界清楚化，减少人情型支出",
+        blind: "容易把别人的感受放到自己的目标之前"
+      },
+      {
+        name: "表达者",
+        test: (day) => [3, 12, 21, 30].includes(day),
+        trait: "更容易通过语言、审美或创意建立存在感",
+        relation: "适合把情绪翻译成具体请求，而不是只释放感受",
+        finance: "要区分创造性投入和情绪性消费",
+        blind: "容易灵感很多，但收束成作品的比例不够"
+      },
+      {
+        name: "建构者",
+        test: (day) => [4, 13, 22, 31].includes(day),
+        trait: "更偏好稳定结构、流程和可验证成果",
+        relation: "适合在关系里说明规则背后的关心",
+        finance: "适合长期储蓄、保险、指数化配置和稳健资产",
+        blind: "容易把可控性看得过重，压缩探索空间"
+      },
+      {
+        name: "探索者",
+        test: (day) => [5, 14, 23].includes(day),
+        trait: "更容易被变化、迁移、新技能和跨界机会吸引",
+        relation: "需要提前说明自己对自由度和承诺的理解",
+        finance: "适合设置风险仓位，不让新鲜感接管资金决策",
+        blind: "容易把不适感误判为该换方向"
+      },
+      {
+        name: "照护者",
+        test: (day) => [6, 15, 24].includes(day),
+        trait: "更容易承担照顾、整合和维系关系的角色",
+        relation: "需要把照顾别人和表达自己并列，而不是二选一",
+        finance: "要控制为家庭、关系和体面过度买单的倾向",
+        blind: "容易把责任背成惯性"
+      },
+      {
+        name: "研究者",
+        test: (day) => [7, 16, 25].includes(day),
+        trait: "更重视理解底层逻辑和保留独立判断",
+        relation: "适合解释自己的安静不是冷漠，而是在整理信息",
+        finance: "适合研究型投资，但要避免信息过载后迟迟不行动",
+        blind: "容易用分析替代体验"
+      },
+      {
+        name: "推进者",
+        test: (day) => [8, 17, 26].includes(day),
+        trait: "更关注结果、资源、效率和现实影响力",
+        relation: "需要让亲近的人看到脆弱，而不只是解决方案",
+        finance: "适合资产目标和职业增长联动，但要防止过度杠杆",
+        blind: "容易把强撑误认为掌控"
+      },
+      {
+        name: "整合者",
+        test: (day) => [9, 18, 27].includes(day),
+        trait: "更容易从大局、意义和长期影响出发看问题",
+        relation: "需要把宽容和底线同时保留",
+        finance: "适合价值驱动型长期配置，但要避免理想化判断",
+        blind: "容易替复杂关系承担过多解释工作"
+      }
+    ];
+
+    function getSeasonProfile(month) {
+      return Object.values(seasonProfiles).find((season) => season.months.includes(month));
+    }
+
+    function getDayArchetype(day) {
+      return dayArchetypes.find((item) => item.test(day));
+    }
+
+    function digitSum(value) {
+      return String(value).split("").reduce((sum, char) => sum + Number(char), 0);
+    }
+
+    function reduceNumber(value) {
+      let next = value;
+      while (next > 9 && ![11, 22].includes(next)) {
+        next = digitSum(next);
+      }
+      return next;
+    }
+
+    function getLifeNumber(input) {
+      return reduceNumber(digitSum(input.year) + digitSum(input.month) + digitSum(input.day));
+    }
+
+    function getMonthPhase(day) {
+      if (day <= 10) {
+        return {
+          name: "月初启动位",
+          behavior: "更容易把问题看成起点和任务，行动上偏先启动再校准。",
+          challenge: "需要在开局时多留一点观察，不让速度压过判断。"
+        };
+      }
+      if (day <= 20) {
+        return {
+          name: "月中整合位",
+          behavior: "更容易在多方期待之间做协调，擅长把分散信息合并成方案。",
+          challenge: "需要避免为了平衡所有人而牺牲自己的优先级。"
+        };
+      }
+      return {
+        name: "月末收束位",
+        behavior: "更容易关注结果、完成度和阶段总结，适合做复盘、优化和交付。",
+        challenge: "需要允许过程中的不完美，不把每一步都提前结案。"
+      };
+    }
+
+    function getYearPosition(input) {
+      const start = new Date(input.year, 0, 1);
+      const end = new Date(input.year, 11, 31);
+      const dayOfYear = Math.floor((input.date - start) / 86400000) + 1;
+      const progress = dayOfYear / (Math.floor((end - start) / 86400000) + 1);
+      if (progress < 0.34) {
+        return {
+          name: "年度前段出生",
+          school: "同届中常偏早进入年龄节点，容易较早被期待成熟和负责。",
+          timing: "人生节奏适合先建立基础盘，再逐步拓展选择。"
+        };
+      }
+      if (progress < 0.67) {
+        return {
+          name: "年度中段出生",
+          school: "同届比较中的年龄差异感较弱，更容易在稳定同伴环境中校准自我。",
+          timing: "人生节奏适合在稳定结构中寻找个人化突破。"
+        };
+      }
+      return {
+        name: "年度后段出生",
+        school: "同届中可能更早体验追赶感，也更容易发展观察力和弹性补位能力。",
+        timing: "人生节奏适合把慢热和后发优势转化为复盘能力。"
+      };
+    }
+
+    function getLifeTheme(number) {
+      const themes = {
+        1: ["自主", "建立个人主张", "从等待许可转向主动定义问题"],
+        2: ["协作", "处理关系张力", "在共情之外保留自己的边界"],
+        3: ["表达", "把想法变成可见作品", "从灵感转向稳定输出"],
+        4: ["秩序", "搭建长期系统", "从控制细节转向提升结构弹性"],
+        5: ["变化", "跨界适应", "从追求新鲜转向积累可迁移能力"],
+        6: ["责任", "照护与整合", "从过度承担转向成熟协商"],
+        7: ["洞察", "深度学习", "从旁观分析转向可验证行动"],
+        8: ["影响", "资源与成果", "从证明能力转向建设可持续影响力"],
+        9: ["意义", "整合经验", "从替人消化转向清晰选择"],
+        11: ["敏感洞察", "高感知表达", "把直觉落实成清楚的方法"],
+        22: ["大型建构", "长期项目", "把愿景拆成稳固的执行系统"]
+      };
+      const [name, focus, lesson] = themes[number] || themes[9];
+      return { number, name, focus, lesson };
+    }
+
+    function getPersonalProfile(input) {
+      const season = getSeasonProfile(input.month);
+      const dayType = getDayArchetype(input.day);
+      const monthPhase = getMonthPhase(input.day);
+      const yearPosition = getYearPosition(input);
+      const lifeTheme = getLifeTheme(getLifeNumber(input));
+      return { season, dayType, monthPhase, yearPosition, lifeTheme };
+    }
+
+    function buildReport(input) {
+      const profile = getProfile(input.year);
+      const personal = getPersonalProfile(input);
+      const age = new Date().getFullYear() - input.year;
+      const decade = `${Math.floor(input.year / 10) * 10}s`;
+      const formatted = `${String(input.day).padStart(2, "0")}/${String(input.month).padStart(2, "0")}/${input.year}`;
+      const comparisonBefore = input.year <= 1980 ? "更年轻的世代通常拥有更多数字工具，但早期稳定边界更弱" : "更早出生的人通常更依赖线下秩序、资历路径和稳定组织";
+      const comparisonAfter = input.year >= 1997 ? "更年长的人通常更熟悉低噪音成长环境和长期组织承诺" : "更晚出生的人更习惯平台化协作、即时反馈和多重身份切换";
+
+      return {
+        formatted,
+        age,
+        profile,
+        personal,
+        sections: [
+          {
+            title: sectionTitles[0],
+            tag: personal.season.name,
+            summary: `${formatted} 出生的人被放置在“${profile.name}”的时代坐标中：${profile.context}。个人化层面再叠加了${personal.season.name}、${personal.monthPhase.name}和${personal.yearPosition.name}，所以同一年出生的人也会呈现不同成长节奏。`,
+            insights: [
+              ["代际共同影响", profile.childhood[0]],
+              ["个人节奏修正", personal.season.childhood],
+              ["同届位置感", personal.yearPosition.school]
+            ],
+            timeline: [
+              [`0-${Math.min(6, age)} 岁`, `通过家庭互动、照料方式和安全感建立基本世界观。${personal.season.name}让这个阶段更强调：${personal.season.childhood}`],
+              [`7-${Math.min(15, age)} 岁`, `学校评价和同伴比较开始变强。${personal.yearPosition.school}`],
+              [`16-${Math.min(24, age)} 岁`, `时代变化进入选择题：升学、职业、城市、技术工具和身份表达。${personal.monthPhase.behavior}`]
+            ]
+          },
+          {
+            title: sectionTitles[1],
+            tag: `${personal.dayType.name} · 主题${personal.lifeTheme.number}`,
+            summary: `这一出生点的核心张力是：既要回应时代给出的成功模板，也要寻找更私人化的生活方式。与前后世代相比，${comparisonBefore}；而${comparisonAfter}。个人层面则更接近“${personal.dayType.name} × ${personal.lifeTheme.name}”的组合。`,
+            insights: [
+              ["稳定底色", `常见优势是${profile.values.slice(0, 2).join("、")}，做决定时会优先寻找可解释的路径和可积累的回报。`],
+              ["个体倾向", `${personal.dayType.name}特征意味着你${personal.dayType.trait}；${personal.lifeTheme.name}主题会把注意力拉向“${personal.lifeTheme.focus}”。`],
+              ["进化方向", `随着年龄增长，性格会从“证明自己”转向“选择真正值得投入的系统”。这条线上的关键课题是：${personal.lifeTheme.lesson}。`]
+            ],
+            matrix: [
+              ["比前一代更强", "对新机会、身份表达和跨领域迁移的接受度更高。"],
+              ["比后一代更强", "对长期投入、线下关系和现实约束的体感通常更扎实。"],
+              ["容易卡住", `${personal.monthPhase.challenge} 叠加代际比较压力时，容易把人生变成连续交付。`],
+              ["成长钥匙", `把比较对象从同龄人换成自己的系统：身体、关系、技能、资产和作品；尤其要用“${personal.lifeTheme.name}”主题做长期校准。`]
+            ]
+          },
+          {
+            title: sectionTitles[2],
+            tag: personal.season.name,
+            summary: `根据 ${input.year} 年前后的经济条件、文化趋势和技术格局，适合的职业不是单一岗位，而是能同时利用时代敏感度、学习能力和协作偏好的方向。${personal.season.career}`,
+            insights: profile.work.slice(0, 3).map((job, index) => [
+              job,
+              [
+                "适合把复杂信息整理成可执行方案，长期价值来自判断力和可信度。",
+                "适合在变化中寻找用户、市场或组织需求，长期价值来自复盘速度。",
+                "适合把审美、技术或沟通转化为产品化成果，长期价值来自作品积累。"
+              ][index]
+            ]),
+            matrix: [
+              ["自然优势", `能在旧规则与新工具之间翻译；${personal.dayType.name}倾向让你${personal.dayType.trait}。`],
+              ["工作偏好", `需要一定自主度，也需要清晰反馈。${personal.monthPhase.behavior}`],
+              ["长期满足", `来自可迁移技能、稳定现金流、被认可的专业身份，以及能服务“${personal.lifeTheme.focus}”的领域。`],
+              ["避坑提醒", `不要只追逐热门行业，要确认岗位是否真的让你的判断力、表达力或执行力复利；${personal.season.blind}`]
+            ]
+          },
+          {
+            title: sectionTitles[3],
+            tag: personal.dayType.name,
+            summary: `关系模式不由生日决定，但出生时代会影响一个人如何理解亲密、边界、责任和冲突。${profile.name} 常在“想要稳定连接”和“需要个人空间”之间寻找平衡。`,
+            insights: [
+              ["沟通风格", `${personal.season.relationship} ${personal.dayType.relation}`],
+              ["依恋倾向", "常见模式是既渴望被坚定选择，也担心过度依赖带来失控。安全感来自稳定行动而不是口头承诺。"],
+              ["冲突反应", `${personal.monthPhase.challenge} 冲突中真正的成长点是提前表达边界，而不是等到情绪透支。`]
+            ],
+            matrix: [
+              ["优势", "重视责任、兑现和共同成长，愿意为重要关系投入长期维护。"],
+              ["盲点", `${personal.dayType.blind}，也可能把“我没事”当作关系保护，实际却让对方失去校准机会。`],
+              ["修复策略", "用具体事实表达感受：发生了什么、我如何理解、我需要什么、下一步怎么试。"],
+              ["成长机会", "把亲密关系从绩效场改成练习场，允许脆弱、协商和阶段性调整。"]
+            ]
+          },
+          {
+            title: sectionTitles[4],
+            tag: `主题${personal.lifeTheme.number}`,
+            summary: `${profile.money} 个人化修正是：${personal.season.money}`,
+            insights: [
+              ["金钱脚本", "早期经济氛围会影响对安全、体面和选择权的理解。钱不只是数字，也代表能否掌控生活节奏。"],
+              ["风险偏好", `${personal.dayType.finance} 同时适合把风险拆成学习型风险、资产型风险和生存型风险。`],
+              ["财富积累", `长期更依赖现金流管理、技能复利、资产配置纪律和消费欲望的自我识别；${personal.lifeTheme.name}主题要求财富服务“${personal.lifeTheme.focus}”。`]
+            ],
+            matrix: [
+              ["常见优势", "能为了长期目标延迟满足，并愿意学习新工具提高收入效率。"],
+              ["常见盲点", "可能在焦虑时过度囤安全感，或在被机会叙事刺激时追高。"],
+              ["储蓄策略", "保留 6-12 个月基础现金流，再把长期资金分层配置。"],
+              ["决策准则", "任何投资或重大消费都先问：它提升现金流、能力、健康，还是只是缓解短期焦虑？"]
+            ]
+          },
+          {
+            title: sectionTitles[5],
+            tag: personal.monthPhase.name,
+            summary: `${profile.blind} 叠加个人特征后，最需要留意的是：${personal.dayType.blind}，以及${personal.season.blind}`,
+            insights: [
+              ["日常表现", `对外看起来很能扛，内部却可能长期紧绷。${personal.monthPhase.behavior}`],
+              ["深层机制", "这通常来自早期环境对表现、懂事、竞争或安全的强调，不代表性格缺陷。"],
+              ["转化方法", `把盲点改写成优势：建立反馈机制、固定复盘、主动求助，并给恢复留出真实时间。你的关键练习是：${personal.lifeTheme.lesson}。`]
+            ],
+            matrix: [
+              ["盲区一", "把忙碌误认为进步。策略：每周只保留 3 个真正推进人生系统的关键动作。"],
+              ["盲区二", "把比较误认为方向。策略：用个人仪表盘替代社交参照，比如健康、现金流、作品、关系质量。"],
+              ["盲区三", "把独立误认为不需要支持。策略：为不同问题建立不同支持圈，不让一个人承担全部功能。"],
+              ["盲区四", "把信息摄入误认为能力增长。策略：每学一类信息，就产出一个可验证的小作品。"]
+            ]
+          },
+          {
+            title: sectionTitles[6],
+            tag: personal.yearPosition.name,
+            summary: `以下路线图以 ${formatted} 为起点，结合 ${profile.name} 的成长背景、${personal.season.name}、${personal.dayType.name}和生命主题“${personal.lifeTheme.name}”，呈现不同阶段更可能遇到的机会、挑战和决策重点。`,
+            timeline: [
+              ["0-12 岁", "关键课程是安全感、学习习惯和身体经验。优先事项是建立稳定照料、真实兴趣和基础自信。"],
+              ["13-22 岁", `关键课程是身份试探和能力验证。${personal.yearPosition.school}`],
+              ["23-35 岁", `关键课程是职业定位、亲密关系和城市选择。优先事项是形成可迁移技能与健康边界，并回应“${personal.lifeTheme.focus}”。`],
+              ["36-50 岁", `关键课程是资源整合和角色重组。${personal.season.route}`],
+              ["51 岁以后", "关键课程是传承、自由和意义感。优先事项是健康、关系、作品和可持续的生活节奏。"]
+            ],
+            matrix: [
+              ["当前年龄", `${age} 岁左右，重点不是追赶所有可能性，而是识别最值得复利的两三个系统。`],
+              ["年份坐标", `${decade} 出生，生肖为${zodiacLabel(input.year)}。这里仅作为文化标签，不作为命理依据。`],
+              ["个人坐标", `${personal.season.name} · ${personal.monthPhase.name} · ${personal.yearPosition.name} · 生命主题 ${personal.lifeTheme.number}「${personal.lifeTheme.name}」。`],
+              ["决策重点", `每个阶段都同时看三件事：能量是否恢复、能力是否增长、关系是否更真实；并持续校准：${personal.lifeTheme.lesson}。`]
+            ]
+          }
+        ]
+      };
+    }
+
+    function renderReport(report) {
+      currentReport = report;
+      exportButton.disabled = false;
+      birthYearEl.textContent = `${report.profile.name}`;
+      birthMetaEl.textContent = `${report.formatted} · ${report.personal.season.name} · ${report.personal.dayType.name} · 主题 ${report.personal.lifeTheme.number}`;
+      tocEl.innerHTML = report.sections.map((section, index) => `
+        <a href="#section-${index + 1}"><span class="dot"></span>${index + 1}. ${section.title}</a>
+      `).join("");
+      reportEl.innerHTML = renderPersonalOverview(report) + report.sections.map((section, index) => renderSection(section, index)).join("");
+    }
+
+    function renderPersonalOverview(report) {
+      const personal = report.personal;
+      const items = [
+        ["代际底盘", report.profile.name, report.profile.context],
+        ["出生季节", personal.season.name, personal.season.personality],
+        ["日期原型", personal.dayType.name, personal.dayType.trait],
+        ["月内位置", personal.monthPhase.name, personal.monthPhase.behavior],
+        ["年度位置", personal.yearPosition.name, personal.yearPosition.timing],
+        ["生命主题", `${personal.lifeTheme.number} · ${personal.lifeTheme.name}`, personal.lifeTheme.lesson]
+      ];
+      return `
+        <article class="personal-overview" id="personal-overview">
+          <div class="overview-head">
+            <div>
+              <h3>${escapeHtml(report.formatted)} 的专属画像摘要</h3>
+              <p>下面 6 个变量会让相近生日产生不同报告。年份负责时代背景，月日负责个人节奏、行为倾向和决策提醒。</p>
+            </div>
+            <span class="tag">个性化差异</span>
+          </div>
+          <div class="overview-grid">
+            ${items.map(([label, title, text]) => `
+              <div class="overview-item">
+                <span>${escapeHtml(label)}</span>
+                <strong>${escapeHtml(title)}</strong>
+                <p>${escapeHtml(text)}</p>
+              </div>
+            `).join("")}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderSection(section, index) {
+      const insights = section.insights ? `
+        <div class="insight-grid">
+          ${section.insights.map(([title, text]) => `
+            <div class="insight"><strong>${escapeHtml(title)}</strong><p>${escapeHtml(text)}</p></div>
+          `).join("")}
+        </div>
+      ` : "";
+      const timeline = section.timeline ? `
+        <div class="timeline">
+          ${section.timeline.map(([label, text]) => `
+            <div class="timeline-row"><strong>${escapeHtml(label)}</strong><p>${escapeHtml(text)}</p></div>
+          `).join("")}
+        </div>
+      ` : "";
+      const matrix = section.matrix ? `
+        <div class="matrix">
+          ${section.matrix.map(([label, text]) => `
+            <div class="matrix-item"><b>${escapeHtml(label)}</b><span>${escapeHtml(text)}</span></div>
+          `).join("")}
+        </div>
+      ` : "";
+      return `
+        <article class="section-card" id="section-${index + 1}">
+          <div class="section-head">
+            <div class="number">${index + 1}</div>
+            <h3>${escapeHtml(section.title)}</h3>
+            <span class="tag">${escapeHtml(section.tag)}</span>
+          </div>
+          <div class="section-body">
+            <p class="summary">${escapeHtml(section.summary)}</p>
+            ${insights}
+            ${timeline}
+            ${matrix}
+          </div>
+        </article>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function generate() {
+      try {
+        const input = parseDate();
+        statusEl.textContent = "";
+        renderReport(buildReport(input));
+      } catch (error) {
+        statusEl.textContent = error.message;
+      }
+    }
+
+    function fillDate(dateText) {
+      const [day, month, year] = dateText.split("/");
+      dayInput.value = day;
+      monthInput.value = month;
+      yearInput.value = year;
+      generate();
+    }
+
+    function exportHtml() {
+      if (!currentReport) return;
+      const reportMarkup = reportEl.innerHTML;
+      const css = Array.from(document.styleSheets)
+        .map((sheet) => {
+          try {
+            return Array.from(sheet.cssRules).map((rule) => rule.cssText).join("\n");
+          } catch {
+            return "";
+          }
+        })
+        .join("\n")
+        .replace(".export-template { display: none; }", "");
+      const html = `<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtml(currentReport.formatted)} 生日时代画像</title>
+  <style>${css}</style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="seal" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.127 22H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5.125"></path>
+            <path d="M14.62 18.8A2.25 2.25 0 1 1 18 15.836a2.25 2.25 0 1 1 3.38 2.966l-2.626 2.856a.998.998 0 0 1-1.507 0z"></path>
+            <path d="M16 2v4"></path>
+            <path d="M3 10h18"></path>
+            <path d="M8 2v4"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>生日时代画像</h1>
+          <p>${escapeHtml(currentReport.formatted)} · ${escapeHtml(currentReport.profile.name)} · 本报告为代际心理与时代语境分析</p>
+        </div>
+      </div>
+    </header>
+    <section class="dashboard" style="grid-template-columns: 1fr;">
+      <div class="report">${reportMarkup}</div>
+    </section>
+  </main>
+</body>
+</html>`;
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const filename = `生日时代画像-${currentReport.formatted.replaceAll("/", "-")}.html`;
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.rel = "noopener";
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      const preview = window.open(url, "_blank", "noopener");
+      statusEl.innerHTML = `已生成 ${escapeHtml(filename)}。如果没有自动下载，<a href="${url}" download="${escapeHtml(filename)}" target="_blank" rel="noopener">点击这里保存或打开</a>。`;
+      setTimeout(() => {
+        link.remove();
+        if (preview && preview.closed) {
+          URL.revokeObjectURL(url);
+        }
+      }, 120000);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      generate();
+    });
+
+    sampleButton.addEventListener("click", () => fillDate("18/11/1995"));
+    exportButton.addEventListener("click", exportHtml);
+    clearButton.addEventListener("click", () => {
+      dayInput.value = "";
+      monthInput.value = "";
+      yearInput.value = "";
+      statusEl.textContent = "";
+      currentReport = null;
+      exportButton.disabled = true;
+      birthYearEl.textContent = "待生成";
+      birthMetaEl.textContent = "输入日期后显示时代坐标";
+      tocEl.innerHTML = "";
+      reportEl.innerHTML = '<div class="empty-state"><div><h3>报告会出现在这里</h3><p>先输入一个出生日期，生成完整的 7 段式时代画像。</p></div></div>';
+    });
+  </script>
+</body>
+</html>
